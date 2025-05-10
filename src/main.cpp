@@ -1,12 +1,37 @@
 #include "chess.h"
+#include <cstring>
 
-int main() {
+void handleWindowResize(SDL_Window* window, int& squareSize, int& offsetX, int& offsetY) {
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+    // Calculate square renderer dimensions
+    squareSize = std::min(windowWidth, windowHeight);
+    offsetX = (windowWidth - squareSize) / 2;
+    offsetY = (windowHeight - squareSize) / 2;
+}
+
+int main(int argc, char* argv[]) {
+    bool fullscreen = false;
+
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--fullscreen") == 0) {
+            fullscreen = true;
+            break;
+        }
+    }
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
         return -1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    Uint32 windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+    if (fullscreen) {
+        windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+
+    SDL_Window* window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 640, windowFlags);
     if (!window) {
         std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -25,22 +50,17 @@ int main() {
     bool running = true;
     SDL_Event event;
 
+    int squareSize, offsetX, offsetY;
+    handleWindowResize(window, squareSize, offsetX, offsetY); // Initial calculation
+
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                // Handle window resize if needed
+                handleWindowResize(window, squareSize, offsetX, offsetY);
             }
         }
-
-        int windowWidth, windowHeight;
-        SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-
-        // Calculate square renderer dimensions
-        int squareSize = std::min(windowWidth, windowHeight);
-        int offsetX = (windowWidth - squareSize) / 2;
-        int offsetY = (windowHeight - squareSize) / 2;
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Clear screen with black
         SDL_RenderClear(renderer);
