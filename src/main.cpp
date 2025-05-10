@@ -56,9 +56,11 @@ int main(int argc, char* argv[]) {
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = false;
+            running = false;
             } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                handleWindowResize(window, squareSize, offsetX, offsetY);
+            handleWindowResize(window, squareSize, offsetX, offsetY);
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+            running = false;
             }
         }
 
