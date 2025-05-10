@@ -79,6 +79,8 @@ int main(int argc, char* argv[]) {
         SDL_RenderPresent(renderer);
     }
 
+    chess.board.cleanupPieceTextures();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

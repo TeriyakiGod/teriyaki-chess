@@ -5,8 +5,8 @@ int Board::square[64] = { Piece::NONE };
 std::unordered_map<int, SDL_Texture*> Board::pieceTextures;
 
 Board::Board() {
-    Board::square[0] = Piece::ROOK | Piece::WHITE;
-    Board::square[63] = Piece::KNIGHT | Piece::BLACK;
+    // Initialize the board with the starting position
+    loadPositionFromFEN(START_FEN);
 };
 
 void Board::drawBoard(SDL_Renderer* renderer) {
@@ -77,7 +77,7 @@ void Board::loadPieceTextures(SDL_Renderer* renderer) {
     const int PIECE_SIZE = 16;
 
     // Load black pieces (top row)
-    for (int pieceType = Piece::KING; pieceType <= Piece::QUEEN; ++pieceType) {
+    for (int pieceType = Piece::KING; pieceType <= Piece::PAWN; ++pieceType) {
         SDL_Rect srcRect = { (pieceType - 1) * PIECE_SIZE, 0, PIECE_SIZE, PIECE_SIZE }; // Top row
         SDL_Texture* pieceTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, PIECE_SIZE, PIECE_SIZE);
         SDL_SetTextureBlendMode(pieceTexture, SDL_BLENDMODE_BLEND); // Enable blending for the piece texture
@@ -88,7 +88,7 @@ void Board::loadPieceTextures(SDL_Renderer* renderer) {
     }
 
     // Load white pieces (bottom row)
-    for (int pieceType = Piece::KING; pieceType <= Piece::QUEEN; ++pieceType) {
+    for (int pieceType = Piece::KING; pieceType <= Piece::PAWN; ++pieceType) {
         SDL_Rect srcRect = { (pieceType - 1) * PIECE_SIZE, PIECE_SIZE, PIECE_SIZE, PIECE_SIZE }; // Bottom row
         SDL_Texture* pieceTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, PIECE_SIZE, PIECE_SIZE);
         SDL_SetTextureBlendMode(pieceTexture, SDL_BLENDMODE_BLEND); // Enable blending for the piece texture
@@ -107,6 +107,36 @@ void Board::cleanupPieceTextures() {
         SDL_DestroyTexture(texture);
     }
     pieceTextures.clear();
+}
+
+void Board::loadPositionFromFEN(const std::string& fen) {
+    auto pieceMap = std::unordered_map<char, int>{
+        {'k', Piece::KING},
+        {'p', Piece::PAWN},
+        {'n', Piece::KNIGHT},
+        {'b', Piece::BISHOP},
+        {'r', Piece::ROOK},
+        {'q', Piece::QUEEN}
+    };
+
+    std::string fenBoard = fen.substr(0, fen.find(' '));
+    int file = 0, rank = 7;
+
+    for (char c : fenBoard) {
+        if (c == '/') {
+            rank--;
+            file = 0;
+        } else {
+            if (isdigit(c)) {
+                file += c - '0'; // Skip empty squares
+            } else {
+                int pieceColor = (isupper(c) ? Piece::WHITE : Piece::BLACK);
+                int pieceType = pieceMap[tolower(c)];
+                square[file + rank * 8] = pieceColor | pieceType;
+                file++;
+            }
+        }
+    }
 }
 
 Chess::Chess() {
