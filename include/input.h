@@ -1,8 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include "chess.h"
 #include <SDL2/SDL.h>
+#include "board.h"
 
 class Input {
 public:
@@ -21,4 +21,4 @@ private:
     int getSquareFromMouse(int x, int y);
 };
 
-#endif
+#endif // INPUT_H

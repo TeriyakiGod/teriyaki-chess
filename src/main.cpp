@@ -1,59 +1,23 @@
-#include "chess.h"
-#include <cstring>
+#include "video.h"
 #include "input.h"
-
-void handleWindowResize(SDL_Window* window, int& squareSize, int& offsetX, int& offsetY) {
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-
-    squareSize = std::min(windowWidth, windowHeight);
-    offsetX = (windowWidth - squareSize) / 2;
-    offsetY = (windowHeight - squareSize) / 2;
-}
+#include "chess.h"
 
 int main(int argc, char* argv[]) {
-    bool fullscreen = false;
+
+    if (Video::init() < 0) {
+        return -1;
+    }
 
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--fullscreen") == 0) {
-            fullscreen = true;
+            Video::setFullscreen(true);
             break;
         }
-    }
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
-        return -1;
-    }
-
-    Uint32 windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-    if (fullscreen) {
-        windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    }
-
-    SDL_Window* window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 640, windowFlags);
-    if (!window) {
-        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return -1;
-    }
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return -1;
     }
 
     Chess chess;
     bool running = true;
     SDL_Event event;
-
-    int squareSize, offsetX, offsetY;
-    handleWindowResize(window, squareSize, offsetX, offsetY);
-
-    chess.board.loadPieceTextures(renderer);
 
     Input input(chess.board);
 
@@ -62,31 +26,19 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
             running = false;
             } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-            handleWindowResize(window, squareSize, offsetX, offsetY);
+                Video::handleWindowResize();
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_f) {
+                Video::switchFullscreen();
             } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
             running = false;
             } else {
                 input.handleEvent(event);
             }
         }
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        // Set viewport to the square area
-        SDL_Rect viewport = { offsetX, offsetY, squareSize, squareSize };
-        SDL_RenderSetViewport(renderer, &viewport);
-
-        chess.board.drawBoard(renderer);
-        chess.board.drawPieces(renderer);
-
-        SDL_RenderPresent(renderer);
+        Video::draw(chess.board);
     }
 
-    chess.board.cleanupPieceTextures();
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    Video::cleanup();
     SDL_Quit();
 
     return 0;
