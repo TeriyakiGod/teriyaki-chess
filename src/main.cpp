@@ -1,11 +1,11 @@
 #include "chess.h"
 #include <cstring>
+#include "input.h"
 
 void handleWindowResize(SDL_Window* window, int& squareSize, int& offsetX, int& offsetY) {
     int windowWidth, windowHeight;
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
-    // Calculate square renderer dimensions
     squareSize = std::min(windowWidth, windowHeight);
     offsetX = (windowWidth - squareSize) / 2;
     offsetY = (windowHeight - squareSize) / 2;
@@ -51,9 +51,11 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     int squareSize, offsetX, offsetY;
-    handleWindowResize(window, squareSize, offsetX, offsetY); // Initial calculation
+    handleWindowResize(window, squareSize, offsetX, offsetY);
 
     chess.board.loadPieceTextures(renderer);
+
+    Input input(chess.board);
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -63,10 +65,12 @@ int main(int argc, char* argv[]) {
             handleWindowResize(window, squareSize, offsetX, offsetY);
             } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
             running = false;
+            } else {
+                input.handleEvent(event);
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Clear screen with black
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
         // Set viewport to the square area

@@ -37,6 +37,9 @@ public:
     void cleanupPieceTextures();
     void loadPieceTextures(SDL_Renderer* renderer);
     void loadPositionFromFEN(const std::string& fen);
+    void movePiece(int fromFile, int fromRank, int toFile, int toRank);
+    int getPiece(int square);
+    void setPiece(int square, int piece);
 };
 
 class Chess {

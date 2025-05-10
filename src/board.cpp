@@ -137,3 +137,16 @@ void Board::loadPositionFromFEN(const std::string& fen) {
         }
     }
 }
+
+void Board::movePiece(int fromFile, int fromRank, int toFile, int toRank) {
+    int piece = this->getPiece(fromFile + fromRank * 8);
+    this->setPiece(fromFile + fromRank * 8, Piece::NONE);
+    this->setPiece(toFile + toRank * 8, piece);
+}
+
+int Board::getPiece(int square) {
+    return this->square[square];
+}
+void Board::setPiece(int square, int piece) {
+    this->square[square] = piece;
+}
