@@ -53,6 +53,8 @@ int main(int argc, char* argv[]) {
     int squareSize, offsetX, offsetY;
     handleWindowResize(window, squareSize, offsetX, offsetY); // Initial calculation
 
+    chess.board.loadPieceTextures(renderer);
+
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -71,7 +73,8 @@ int main(int argc, char* argv[]) {
         SDL_Rect viewport = { offsetX, offsetY, squareSize, squareSize };
         SDL_RenderSetViewport(renderer, &viewport);
 
-        chess.drawBoard(renderer);
+        chess.board.drawBoard(renderer);
+        chess.board.drawPieces(renderer);
 
         SDL_RenderPresent(renderer);
     }
