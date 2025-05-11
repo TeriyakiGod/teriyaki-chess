@@ -19,14 +19,12 @@ int main(int argc, char* argv[]) {
     bool running = true;
     SDL_Event event;
 
-    Input input;
-
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
                 running = false;
             } else {
-                input.handleEvent(event);
+                Input::handleEvent(event);
             }
         }
         Video::draw();

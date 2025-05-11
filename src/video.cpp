@@ -177,6 +177,7 @@ void Video::draw() {
     SDL_RenderClear(renderer);
     drawChessBoard();
     drawPieces();
+    drawCursor(Input::getCursorX(), Input::getCursorY());
     SDL_RenderPresent(renderer);
 }
 
@@ -184,4 +185,23 @@ void Video::cleanup() {
     cleanupPieceTextures();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+}
+
+void Video::drawCursor(int file, int rank) {
+    int rendererWidth, rendererHeight;
+    SDL_GetRendererOutputSize(renderer, &rendererWidth, &rendererHeight);
+    int SQUARE_SIZE = std::min(rendererWidth, rendererHeight) / 8;
+    SDL_Rect cursorRect = { file * SQUARE_SIZE, rank * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE };
+
+    // Scale the frame thickness based on the renderer size
+    int thickness = std::max(1, SQUARE_SIZE / 16); // Thickness is 1/16th of the square size, minimum of 1
+
+    SDL_SetRenderDrawColor(renderer, COLOR_GRAY.r, COLOR_GRAY.g, COLOR_GRAY.b, COLOR_GRAY.a);
+    for (int i = 0; i < thickness; ++i) {
+        SDL_RenderDrawRect(renderer, &cursorRect);
+        cursorRect.x += 1;
+        cursorRect.y += 1;
+        cursorRect.w -= 2;
+        cursorRect.h -= 2;
+    }
 }

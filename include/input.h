@@ -6,23 +6,26 @@
 
 class Input {
 public:
-    Input();
+    static void handleEvent(const SDL_Event& event);
+    static void handleMouseButtonDown(const SDL_MouseButtonEvent& button);
+    static void handleMouseButtonUp(const SDL_MouseButtonEvent& button);
+    static void handleMouseMotion(const SDL_MouseMotionEvent& motion);
+    static void handleWindowResize();
+    static void handleKeyDown(const SDL_KeyboardEvent& key);
 
-    void handleEvent(const SDL_Event& event);
-    void handleMouseButtonDown(const SDL_MouseButtonEvent& button);
-    void handleMouseButtonUp(const SDL_MouseButtonEvent& button);
-    void handleMouseMotion(const SDL_MouseMotionEvent& motion);
-    void handleWindowResize();
-    void handleKeyDown(const SDL_KeyboardEvent& key);
+    static int getCursorX() { return cursorX; }
+    static int getCursorY() { return cursorY; }
 
 private:
-    bool dragging;
-    int draggedPiece;
-    int startSquare;
-    int mouseX, mouseY;
-    int cursorX, cursorY;
+    static bool dragging;
+    static int draggedPiece;
+    static int startSquare;
+    static int mouseX, mouseY;
+    static int cursorX, cursorY;
+    static bool keyboardSelecting;
 
-    int getSquareFromMouse(int x, int y);
+    static int getSquareFromMouse(int x, int y);
+    static void selectWithKeyboard();
 };
 
 #endif // INPUT_H
