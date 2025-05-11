@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     bool running = true;
     SDL_Event event;
 
-    Input input(chess.board);
+    Input input;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
                 input.handleEvent(event);
             }
         }
-        Video::draw(chess.board);
+        Video::draw();
     }
 
     Video::cleanup();

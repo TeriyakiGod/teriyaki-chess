@@ -1,11 +1,7 @@
-#include "chess.h"
+#include "board.h"
 
 int Board::square[64] = { Piece::NONE };
-
-Board::Board() {
-    // Initialize the board with the starting position
-    loadPositionFromFEN(START_FEN);
-};
+Move Board::lastMove = Move{ -1, -1 };
 
 void Board::loadPositionFromFEN(const std::string& fen) {
     auto pieceMap = std::unordered_map<char, int>{
@@ -38,14 +34,20 @@ void Board::loadPositionFromFEN(const std::string& fen) {
 }
 
 void Board::movePiece(int fromFile, int fromRank, int toFile, int toRank) {
-    int piece = this->getPiece(fromFile + fromRank * 8);
-    this->setPiece(fromFile + fromRank * 8, Piece::NONE);
-    this->setPiece(toFile + toRank * 8, piece);
+    if (fromFile == toFile && fromRank == toRank) {
+        std::cout << "Invalid move: same square" << std::endl;
+        return;
+    }
+    int piece = Board::getPiece(fromFile + fromRank * 8);
+    Board::setPiece(fromFile + fromRank * 8, Piece::NONE);
+    Board::setPiece(toFile + toRank * 8, piece);
+    Board::lastMove = Move{ fromFile + fromRank * 8, toFile + toRank * 8 };
+    std::cout << "Moved piece from " << fromFile << "," << fromRank << " to " << toFile << "," << toRank << std::endl;
 }
 
 int Board::getPiece(int square) {
-    return this->square[square];
+    return Board::square[square];
 }
 void Board::setPiece(int square, int piece) {
-    this->square[square] = piece;
+    Board::square[square] = piece;
 }

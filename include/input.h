@@ -6,7 +6,7 @@
 
 class Input {
 public:
-    Input(Board& board);
+    Input();
 
     void handleEvent(const SDL_Event& event);
     void handleMouseButtonDown(const SDL_MouseButtonEvent& button);
@@ -16,8 +16,6 @@ public:
     void handleKeyDown(const SDL_KeyboardEvent& key);
 
 private:
-    Board& board;
-
     bool dragging;
     int draggedPiece;
     int startSquare;

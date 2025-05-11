@@ -20,11 +20,11 @@ class Video {
 public:
     static int init();
     static void cleanup();
-    static void draw(Board& board);
+    static void draw();
     static void drawChessBoard();
     static void drawSquare(int file, int rank, SDL_Color color);
     static void drawPiece(int piece, int file, int rank);
-    static void drawPieces(Board& board);
+    static void drawPieces();
     static void cleanupPieceTextures();
     static void loadPieceTextures();
     static void handleWindowResize();

@@ -50,6 +50,15 @@ void Video::drawSquare(int file, int rank, SDL_Color color) {
 void Video::drawChessBoard() {
     for (int file = 0; file < 8; ++file) {
         for (int rank = 0; rank < 8; ++rank) {
+            // Check if last move square
+            if (file == Board::lastMove.startSquare % 8 && rank == Board::lastMove.startSquare / 8) {
+                drawSquare(file, rank, COLOR_LIGHT_ORANGE);
+                continue;
+            }
+            if (file == Board::lastMove.targetSquare % 8 && rank == Board::lastMove.targetSquare / 8) {
+                drawSquare(file, rank, COLOR_DARK_ORANGE);
+                continue;
+            }
             bool isWhiteSquare = (file + rank) % 2 == 0;
             SDL_Color color = isWhiteSquare ? COLOR_WHITE : COLOR_BLACK;
             drawSquare(file, rank, color);
@@ -68,10 +77,10 @@ void Video::drawPiece(int piece, int file, int rank) {
     }
 };
 
-void Video::drawPieces(Board& board) {
+void Video::drawPieces() {
     for (int file = 0; file < 8; ++file) {
         for (int rank = 0; rank < 8; ++rank) {
-            int piece = board.getPiece(file + rank * 8);
+            int piece = Board::getPiece(file + rank * 8);
             if (piece != Piece::NONE) {
                 drawPiece(piece, file, rank);
             }
@@ -163,11 +172,11 @@ void Video::switchFullscreen() {
     handleWindowResize();
 }
 
-void Video::draw(Board& board) {
+void Video::draw() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     drawChessBoard();
-    drawPieces(board);
+    drawPieces();
     SDL_RenderPresent(renderer);
 }
 

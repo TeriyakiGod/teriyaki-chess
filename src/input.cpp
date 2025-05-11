@@ -1,8 +1,7 @@
 #include "input.h"
 #include "video.h"
 
-Input::Input(Board& board)
-    : board(board), dragging(false), draggedPiece(Piece::NONE), startSquare(-1), mouseX(0), mouseY(0) {}
+Input::Input(): dragging(false), draggedPiece(Piece::NONE), startSquare(-1), mouseX(0), mouseY(0) {}
 
 void Input::handleEvent(const SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
@@ -23,11 +22,10 @@ void Input::handleMouseButtonDown(const SDL_MouseButtonEvent& button) {
     int y = button.y;
 
     int square = getSquareFromMouse(x, y);
-    if (square >= 0 && board.getPiece(square) != Piece::NONE) {
+    if (square >= 0 && Board::getPiece(square) != Piece::NONE) {
         dragging = true;
-        draggedPiece = board.getPiece(square);
+        draggedPiece = Board::getPiece(square);
         startSquare = square;
-        board.setPiece(square, Piece::NONE);
     }
 }
 
@@ -38,9 +36,7 @@ void Input::handleMouseButtonUp(const SDL_MouseButtonEvent& button) {
 
         int square = getSquareFromMouse(x, y);
         if (square >= 0) {
-            board.setPiece(square, draggedPiece);
-        } else {
-            board.setPiece(startSquare, draggedPiece);
+            Board::movePiece(startSquare % 8, startSquare / 8, square % 8, square / 8);
         }
 
         dragging = false;
