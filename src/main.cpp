@@ -23,14 +23,8 @@ int main(int argc, char* argv[]) {
 
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-            running = false;
-            } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                Video::handleWindowResize();
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_f) {
-                Video::switchFullscreen();
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-            running = false;
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                running = false;
             } else {
                 input.handleEvent(event);
             }

@@ -1,4 +1,5 @@
 #include "input.h"
+#include "video.h"
 
 Input::Input(Board& board)
     : board(board), dragging(false), draggedPiece(Piece::NONE), startSquare(-1), mouseX(0), mouseY(0) {}
@@ -34,6 +35,10 @@ void Input::handleEvent(const SDL_Event& event) {
     } else if (event.type == SDL_MOUSEMOTION) {
         mouseX = event.motion.x;
         mouseY = event.motion.y;
+    } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+        Video::handleWindowResize();
+    } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_f) {
+        Video::switchFullscreen();
     }
 }
 
