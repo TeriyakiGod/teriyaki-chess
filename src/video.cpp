@@ -38,20 +38,24 @@ int Video::init() {
     return 0;
 };
 
-void Video::drawChessBoard() {
+void Video::drawSquare(int file, int rank, SDL_Color color) {
     int rendererWidth, rendererHeight;
     SDL_GetRendererOutputSize(renderer, &rendererWidth, &rendererHeight);
     int SQUARE_SIZE = std::min(rendererWidth, rendererHeight) / 8;
+    SDL_Rect square = { file * SQUARE_SIZE, rank * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE };
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderFillRect(renderer, &square);
+}
+
+void Video::drawChessBoard() {
     for (int file = 0; file < 8; ++file) {
         for (int rank = 0; rank < 8; ++rank) {
             bool isWhiteSquare = (file + rank) % 2 == 0;
-            SDL_Rect square = { file * SQUARE_SIZE, rank * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE };
             SDL_Color color = isWhiteSquare ? COLOR_WHITE : COLOR_BLACK;
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-            SDL_RenderFillRect(renderer, &square);
+            drawSquare(file, rank, color);
         }
     }
-};
+}
 
 void Video::drawPiece(int piece, int file, int rank) {
     SDL_Texture* texture = pieceTextures[piece];
@@ -101,9 +105,6 @@ void Video::loadPieceTextures() {
 
     // Enable blending for the full texture
     SDL_SetTextureBlendMode(fullTexture, SDL_BLENDMODE_BLEND);
-
-    // Define the size of each piece (16x16 pixels)
-    const int PIECE_SIZE = 16;
 
     // Load black pieces (top row)
     for (int pieceType = Piece::KING; pieceType <= Piece::PAWN; ++pieceType) {
