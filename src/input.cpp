@@ -6,38 +6,60 @@ Input::Input(Board& board)
 
 void Input::handleEvent(const SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-        int x = event.button.x;
-        int y = event.button.y;
+        handleMouseButtonDown(event.button);
+    } else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
+        handleMouseButtonUp(event.button);
+    } else if (event.type == SDL_MOUSEMOTION) {
+        handleMouseMotion(event.motion);
+    } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+        handleWindowResize();
+    } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_f) {
+        handleKeyDown(event.key);
+    }
+}
+
+void Input::handleMouseButtonDown(const SDL_MouseButtonEvent& button) {
+    int x = button.x;
+    int y = button.y;
+
+    int square = getSquareFromMouse(x, y);
+    if (square >= 0 && board.getPiece(square) != Piece::NONE) {
+        dragging = true;
+        draggedPiece = board.getPiece(square);
+        startSquare = square;
+        board.setPiece(square, Piece::NONE);
+    }
+}
+
+void Input::handleMouseButtonUp(const SDL_MouseButtonEvent& button) {
+    if (dragging) {
+        int x = button.x;
+        int y = button.y;
 
         int square = getSquareFromMouse(x, y);
-        if (square >= 0 && board.getPiece(square) != Piece::NONE) {
-            dragging = true;
-            draggedPiece = board.getPiece(square);
-            startSquare = square;
-            board.setPiece(square, Piece::NONE); // Temporarily remove the piece from the board
+        if (square >= 0) {
+            board.setPiece(square, draggedPiece);
+        } else {
+            board.setPiece(startSquare, draggedPiece);
         }
-    } else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
-        if (dragging) {
-            int x = event.button.x;
-            int y = event.button.y;
 
-            int square = getSquareFromMouse(x, y);
-            if (square >= 0) {
-                board.setPiece(square, draggedPiece); // Place the piece on the new square
-            } else {
-                board.setPiece(startSquare, draggedPiece); // Return the piece to its original square
-            }
+        dragging = false;
+        draggedPiece = Piece::NONE;
+        startSquare = -1;
+    }
+}
 
-            dragging = false;
-            draggedPiece = Piece::NONE;
-            startSquare = -1;
-        }
-    } else if (event.type == SDL_MOUSEMOTION) {
-        mouseX = event.motion.x;
-        mouseY = event.motion.y;
-    } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
-        Video::handleWindowResize();
-    } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_f) {
+void Input::handleMouseMotion(const SDL_MouseMotionEvent& motion) {
+    mouseX = motion.x;
+    mouseY = motion.y;
+}
+
+void Input::handleWindowResize() {
+    Video::handleWindowResize();
+}
+
+void Input::handleKeyDown(const SDL_KeyboardEvent& key) {
+    if (key.keysym.sym == SDLK_f) {
         Video::switchFullscreen();
     }
 }

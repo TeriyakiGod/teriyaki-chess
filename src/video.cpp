@@ -141,10 +141,11 @@ void Video::cleanupPieceTextures() {
 void Video::handleWindowResize() {
     int windowWidth, windowHeight;
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-
     squareSize = std::min(windowWidth, windowHeight);
     offsetX = (windowWidth - squareSize) / 2;
     offsetY = (windowHeight - squareSize) / 2;
+    SDL_Rect viewport = { offsetX, offsetY, squareSize, squareSize };
+    SDL_RenderSetViewport(renderer, &viewport);
 }
 
 void Video::setFullscreen(bool fullscreen) {
@@ -158,15 +159,14 @@ void Video::setFullscreen(bool fullscreen) {
 void Video::switchFullscreen() {
     fullscreen = !fullscreen;
     setFullscreen(fullscreen);
+    handleWindowResize();
 }
 
 void Video::draw(Board& board) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-
     drawChessBoard();
     drawPieces(board);
-
     SDL_RenderPresent(renderer);
 }
 
