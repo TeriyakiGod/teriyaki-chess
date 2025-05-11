@@ -16,8 +16,6 @@ bool Input::keyboardSelecting = false;
 void Input::handleEvent(const SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
         handleMouseButtonDown(event.button);
-    } else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT) {
-        handleMouseButtonUp(event.button);
     } else if (event.type == SDL_MOUSEMOTION) {
         handleMouseMotion(event.motion);
     } else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -32,26 +30,27 @@ void Input::handleMouseButtonDown(const SDL_MouseButtonEvent& button) {
     int y = button.y;
 
     int square = getSquareFromMouse(x, y);
-    if (square >= 0 && Board::getPiece(square) != Piece::NONE) {
-        dragging = true;
-        draggedPiece = Board::getPiece(square);
-        startSquare = square;
-    }
-}
-
-void Input::handleMouseButtonUp(const SDL_MouseButtonEvent& button) {
-    if (dragging) {
-        int x = button.x;
-        int y = button.y;
-
-        int square = getSquareFromMouse(x, y);
+    if (!keyboardSelecting) {
+        // Select piece on first click
+        if (square >= 0 && Board::getPiece(square) != Piece::NONE) {
+            dragging = true;
+            draggedPiece = Board::getPiece(square);
+            startSquare = square;
+            selectedSquareX = square % 8;
+            selectedSquareY = square / 8;
+            keyboardSelecting = true;
+        }
+    } else {
+        // Drop piece on second click
         if (square >= 0) {
             Board::movePiece(startSquare % 8, startSquare / 8, square % 8, square / 8);
         }
-
         dragging = false;
         draggedPiece = Piece::NONE;
         startSquare = -1;
+        selectedSquareX = -1;
+        selectedSquareY = -1;
+        keyboardSelecting = false;
     }
 }
 
