@@ -19,7 +19,7 @@ int Video::init() {
         windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
 
-    window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 640, windowFlags);
+    window = SDL_CreateWindow("Chess Board", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 128, 128, windowFlags);
     if (!window) {
         std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -177,7 +177,10 @@ void Video::draw() {
     SDL_RenderClear(renderer);
     drawChessBoard();
     drawPieces();
-    drawCursor(Input::getCursorX(), Input::getCursorY());
+    drawCursor(Input::getCursorX(), Input::getCursorY(), COLOR_BLUE);
+    if (Input::isDragging()) {
+        drawCursor(Input::getSelectedSquareX(), Input::getSelectedSquareY(), COLOR_RED);
+    }
     SDL_RenderPresent(renderer);
 }
 
@@ -187,7 +190,7 @@ void Video::cleanup() {
     SDL_DestroyWindow(window);
 }
 
-void Video::drawCursor(int file, int rank) {
+void Video::drawCursor(int file, int rank, SDL_Color color) {
     int rendererWidth, rendererHeight;
     SDL_GetRendererOutputSize(renderer, &rendererWidth, &rendererHeight);
     int SQUARE_SIZE = std::min(rendererWidth, rendererHeight) / 8;
@@ -196,7 +199,7 @@ void Video::drawCursor(int file, int rank) {
     // Scale the frame thickness based on the renderer size
     int thickness = std::max(1, SQUARE_SIZE / 16); // Thickness is 1/16th of the square size, minimum of 1
 
-    SDL_SetRenderDrawColor(renderer, COLOR_GRAY.r, COLOR_GRAY.g, COLOR_GRAY.b, COLOR_GRAY.a);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     for (int i = 0; i < thickness; ++i) {
         SDL_RenderDrawRect(renderer, &cursorRect);
         cursorRect.x += 1;

@@ -14,7 +14,8 @@
 #define COLOR_BLACK SDL_Color{139, 69, 19, 255}
 #define COLOR_LIGHT_ORANGE SDL_Color{255, 165, 0, 255}
 #define COLOR_DARK_ORANGE SDL_Color{255, 140, 0, 255}
-#define COLOR_GRAY SDL_Color{169, 169, 169, 255}
+#define COLOR_RED SDL_Color{255, 0, 0, 255}
+#define COLOR_BLUE SDL_Color{0, 0, 255, 255}
 
 #define PIECE_SIZE 16
 
@@ -27,7 +28,7 @@ public:
     static void drawSquare(int file, int rank, SDL_Color color);
     static void drawPiece(int piece, int file, int rank);
     static void drawPieces();
-    static void drawCursor(int file, int rank);
+    static void drawCursor(int file, int rank, SDL_Color color);
     static void cleanupPieceTextures();
     static void loadPieceTextures();
     static void handleWindowResize();

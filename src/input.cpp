@@ -9,6 +9,8 @@ int Input::mouseX = 0;
 int Input::mouseY = 0;
 int Input::cursorX = 0;
 int Input::cursorY = 0;
+int Input::selectedSquareX = -1;
+int Input::selectedSquareY = -1;
 bool Input::keyboardSelecting = false;
 
 void Input::handleEvent(const SDL_Event& event) {
@@ -100,6 +102,8 @@ void Input::selectWithKeyboard() {
             dragging = true;
             draggedPiece = Board::getPiece(square);
             startSquare = square;
+            selectedSquareX = cursorX;
+            selectedSquareY = cursorY;
             keyboardSelecting = true;
         }
     } else {
@@ -109,6 +113,8 @@ void Input::selectWithKeyboard() {
         dragging = false;
         draggedPiece = Piece::NONE;
         startSquare = -1;
+        selectedSquareX = -1;
+        selectedSquareY = -1;
         keyboardSelecting = false;
     }
 }

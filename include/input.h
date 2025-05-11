@@ -15,12 +15,16 @@ public:
 
     static int getCursorX() { return cursorX; }
     static int getCursorY() { return cursorY; }
+    static int getSelectedSquareX() { return selectedSquareX; }
+    static int getSelectedSquareY() { return selectedSquareY; }
+    static bool isDragging() { return dragging; }
 
 private:
     static bool dragging;
     static int draggedPiece;
     static int startSquare;
     static int mouseX, mouseY;
+    static int selectedSquareX, selectedSquareY;
     static int cursorX, cursorY;
     static bool keyboardSelecting;
 
